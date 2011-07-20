@@ -11,10 +11,10 @@
 package org.mule.transport.cifs;
 
 import org.mule.api.MuleMessage;
+import org.mule.api.construct.FlowConstruct;
 import org.mule.api.endpoint.EndpointURI;
 import org.mule.api.endpoint.InboundEndpoint;
 import org.mule.api.lifecycle.CreateException;
-import org.mule.api.service.Service;
 import org.mule.api.transport.Connector;
 import org.mule.transport.AbstractPollingMessageReceiver;
 import org.mule.util.StringUtils;
@@ -50,16 +50,16 @@ public class SmbMessageReceiver extends AbstractPollingMessageReceiver
      * This constructor is only used for instantiating the receiver from the connector test case
      */
     @Deprecated
-    public SmbMessageReceiver(Connector connector, Service service, InboundEndpoint endpoint)
+    public SmbMessageReceiver(Connector connector, FlowConstruct flowConstruct, InboundEndpoint endpoint)
         throws CreateException
     {
-        this(connector, service, endpoint, DEFAULT_POLL_FREQUENCY, null, null, 0);
+        this(connector, flowConstruct, endpoint, DEFAULT_POLL_FREQUENCY, null, null, 0);
     }
 
-    public SmbMessageReceiver(Connector connector, Service service, InboundEndpoint endpoint,
+    public SmbMessageReceiver(Connector connector, FlowConstruct flowConstruct, InboundEndpoint endpoint,
         long frequency, String moveToDir, String moveToPattern, long fileAge) throws CreateException
     {
-        super(connector, service, endpoint);
+        super(connector, flowConstruct, endpoint);
 
         this.setFrequency(frequency);
         this.moveToDir = moveToDir;

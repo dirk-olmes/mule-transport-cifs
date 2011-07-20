@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:spring="http://www.springframework.org/schema/beans"
+      xmlns:smb="http://www.mulesoft.org/schema/mule/smb"
+      xmlns:vm="http://www.mulesoft.org/schema/mule/vm"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/3.1/mule.xsd
+        http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/3.1/mule-vm.xsd
+        http://www.mulesoft.org/schema/mule/smb http://www.mulesoft.org/schema/mule/smb/3.1/mule-smb.xsd">
+
+    <flow name="smb2vm">
+        <!-- the smb. properties must be set a system properties -->
+        <smb:inbound-endpoint address="smb://${smb.user}:${smb.password}@${smb.host}/mule-share/"/>
+        <vm:outbound-endpoint path="data"/>
+    </flow>
+</mule>
