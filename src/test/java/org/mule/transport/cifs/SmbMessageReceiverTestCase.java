@@ -11,26 +11,25 @@
 package org.mule.transport.cifs;
 
 import org.mule.api.endpoint.InboundEndpoint;
+import org.mule.api.service.Service;
 import org.mule.api.transport.MessageReceiver;
 import org.mule.transport.AbstractMessageReceiverTestCase;
+
+import org.mockito.Mockito;
 
 public class SmbMessageReceiverTestCase extends AbstractMessageReceiverTestCase
 {
     @Override
     public MessageReceiver getMessageReceiver() throws Exception
     {
-    	return null;
-//        Mock mockService = new Mock(Service.class);
-//        mockService.expectAndReturn("getResponseTransformer", null);
-//        return new SmbMessageReceiver(endpoint.getConnector(), (Service) mockService.proxy(), endpoint);
+        Service mockService = Mockito.mock(Service.class);
+        return new SmbMessageReceiver(endpoint.getConnector(), mockService, endpoint,
+            SmbMessageReceiver.DEFAULT_POLL_FREQUENCY, null, null, 0);
     }
 
     @Override
     public InboundEndpoint getEndpoint() throws Exception
     {
-        // TODO return a valid endpoint i.e.
-        // return new MuleEndpoint("tcp://localhost:1234", true)
-        throw new UnsupportedOperationException("getEndpoint");
+        return muleContext.getEndpointFactory().getInboundEndpoint("smb://user:password@host/path");
     }
-
 }

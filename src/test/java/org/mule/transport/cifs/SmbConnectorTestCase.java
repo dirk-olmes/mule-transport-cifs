@@ -13,35 +13,29 @@ package org.mule.transport.cifs;
 import org.mule.api.transport.Connector;
 import org.mule.transport.AbstractConnectorTestCase;
 
+import jcifs.smb.SmbFile;
+
+import static org.mockito.Mockito.mock;
+
 public class SmbConnectorTestCase extends AbstractConnectorTestCase
 {
     @Override
     public Connector createConnector() throws Exception
     {
-        SmbConnector c = new SmbConnector(muleContext);
-        c.setName("Test");
-        return c;
+        SmbConnector connector = new SmbConnector(muleContext);
+        connector.setName("Test");
+        return connector;
     }
 
     @Override
     public String getTestEndpointURI()
     {
-        // TODO Return a valid endpoint for you transport here
-        throw new UnsupportedOperationException("getTestEndpointURI");
+        return "smb://user:password@host/path";
     }
 
     @Override
     public Object getValidMessage() throws Exception
     {
-        // TODO Return an valid message for your transport
-        throw new UnsupportedOperationException("getValidMessage");
+        return mock(SmbFile.class);
     }
-
-
-    public void testProperties() throws Exception
-    {
-        // TODO test setting and retrieving any custom properties on the
-        // Connector as necessary
-    }
-
 }

@@ -21,13 +21,11 @@ public class SmbConnectorFactoryTestCase extends AbstractMuleTestCase
         assertNotNull(endpoint);
         assertNotNull(endpoint.getConnector());
         assertTrue(endpoint.getConnector() instanceof SmbConnector);
-        assertEquals(getEndpointURI(), endpoint.getEndpointURI().getAddress());
+        assertEquals("smb://host/path", endpoint.getEndpointURI().getAddress());
     }
 
     public String getEndpointURI()
     {
-        // TODO return a valid endpoint URI string for your transport
-        // i.e. tcp://localhost:1234
-        throw new UnsupportedOperationException("getEndpointURI");
+        return "smb://user:password@host/path";
     }
 }

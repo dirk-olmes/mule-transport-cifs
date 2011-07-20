@@ -31,30 +31,6 @@ public class SmbMessageRequester extends AbstractMessageRequester
         this.connector = (SmbConnector)endpoint.getConnector();
     }
 
-    @Override
-    protected void doDispose()
-    {
-        // no op
-    }
-
-    @Override
-    protected void doConnect() throws Exception
-    {
-    }
-
-    @Override
-    protected void doDisconnect() throws Exception
-    {
-        try
-        {
-            EndpointURI uri = endpoint.getEndpointURI();
-        }
-        catch (Exception e)
-        {
-            // pool may be closed
-        }
-    }
-
     /**
      * Make a specific request to the underlying transport
      *
@@ -71,7 +47,6 @@ public class SmbMessageRequester extends AbstractMessageRequester
     {
         try
         {
-
             FilenameFilter filenameFilter = null;
             if (endpoint.getFilter() instanceof FilenameFilter)
             {

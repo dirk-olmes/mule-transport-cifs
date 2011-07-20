@@ -16,10 +16,9 @@ import org.mule.transport.AbstractMuleMessageFactoryTestCase;
 import org.mule.transport.file.FileConnector;
 
 import java.io.ByteArrayInputStream;
+import java.util.Arrays;
 
 import jcifs.smb.SmbFile;
-
-import edu.emory.mathcs.backport.java.util.Arrays;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;

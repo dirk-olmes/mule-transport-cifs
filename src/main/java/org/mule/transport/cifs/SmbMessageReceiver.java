@@ -46,13 +46,18 @@ public class SmbMessageReceiver extends AbstractPollingMessageReceiver
     protected final Set<String> scheduledFiles = Collections.synchronizedSet(new HashSet<String>());
     protected final Set<String> currentFiles = Collections.synchronizedSet(new HashSet<String>());
 
-    public SmbMessageReceiver(Connector connector,
-                              Service service,
-                              InboundEndpoint endpoint,
-                              long frequency,
-                              String moveToDir,
-                              String moveToPattern,
-                              long fileAge) throws CreateException
+    /**
+     * This constructor is only used for instantiating the receiver from the connector test case
+     */
+    @Deprecated
+    public SmbMessageReceiver(Connector connector, Service service, InboundEndpoint endpoint)
+        throws CreateException
+    {
+        this(connector, service, endpoint, DEFAULT_POLL_FREQUENCY, null, null, 0);
+    }
+
+    public SmbMessageReceiver(Connector connector, Service service, InboundEndpoint endpoint,
+        long frequency, String moveToDir, String moveToPattern, long fileAge) throws CreateException
     {
         super(connector, service, endpoint);
 

@@ -66,6 +66,13 @@
             <version>1.8.5</version>
             <scope>test</scope>
         </dependency>
+        <!-- this is a transitive test dependency of AbstractConnectorTestCase -->
+        <dependency>
+            <groupId>mockobjects</groupId>
+            <artifactId>mockobjects-core</artifactId>
+            <version>0.09</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <repositories>

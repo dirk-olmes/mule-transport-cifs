@@ -17,12 +17,9 @@ import org.mule.transport.AbstractMessageRequesterFactory;
 
 public class SmbMessageRequesterFactory extends AbstractMessageRequesterFactory
 {
-
-    /** {@inheritDoc} */
     @Override
     public MessageRequester create(InboundEndpoint endpoint) throws MuleException
     {
         return new SmbMessageRequester(endpoint);
     }
-
 }
