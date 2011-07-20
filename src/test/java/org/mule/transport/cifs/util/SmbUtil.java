@@ -15,7 +15,9 @@ import org.mule.util.StringUtils;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
 
+import jcifs.smb.SmbException;
 import jcifs.smb.SmbFile;
 
 public class SmbUtil
@@ -47,9 +49,7 @@ public class SmbUtil
 
     public void createFile(String filename, String content) throws IOException
     {
-        String url = String.format("smb://%s:%s@%s/mule-share/%s", getUsername(), getPassword(),
-            getHost(), filename);
-        SmbFile file = new SmbFile(url);
+        SmbFile file = createSmbFile(filename);
 
         OutputStream outputStream = null;
         try
@@ -61,5 +61,24 @@ public class SmbUtil
         {
             IOUtils.closeQuietly(outputStream);
         }
+    }
+
+    public boolean fileExists(String filename) throws MalformedURLException, SmbException
+    {
+        SmbFile file = createSmbFile(filename);
+        return file.exists();
+    }
+
+    public byte[] getContentsOfFile(String filename) throws IOException
+    {
+        SmbFile file = createSmbFile(filename);
+        return IOUtils.toByteArray(file.getInputStream());
+    }
+
+    private SmbFile createSmbFile(String filename) throws MalformedURLException
+    {
+        String url = String.format("smb://%s:%s@%s/mule-share/%s", getUsername(), getPassword(),
+            getHost(), filename);
+        return new SmbFile(url);
     }
 }
