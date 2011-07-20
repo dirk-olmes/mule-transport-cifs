@@ -10,7 +10,6 @@
 
 package org.mule.transport.cifs;
 
-import org.mule.DefaultMuleMessage;
 import org.mule.api.MuleMessage;
 import org.mule.api.endpoint.EndpointURI;
 import org.mule.api.endpoint.InboundEndpoint;
@@ -18,7 +17,6 @@ import org.mule.api.lifecycle.CreateException;
 import org.mule.api.service.Service;
 import org.mule.api.transport.Connector;
 import org.mule.transport.AbstractPollingMessageReceiver;
-import org.mule.transport.file.FileConnector;
 import org.mule.util.StringUtils;
 
 import java.io.FilenameFilter;
@@ -33,7 +31,6 @@ import java.util.Set;
 import javax.resource.spi.work.Work;
 
 import jcifs.smb.SmbFile;
-import jcifs.smb.SmbFileInputStream;
 
 /**
  * <code>SmbMessageReceiver</code> TODO document
@@ -77,10 +74,10 @@ public class SmbMessageReceiver extends AbstractPollingMessageReceiver
 
         EndpointURI uri = endpoint.getEndpointURI();
 
-        if (SmbConnector.checkNullOrBlank(uri.getUser()) || SmbConnector.checkNullOrBlank(uri.getPassword()))
+        if (StringUtils.isBlank(uri.getUser()) || StringUtils.isBlank(uri.getPassword()))
         {
             logger.warn("No user or password supplied. Attempting to connect with just smb://<host>/<path>");
-            logger.info("smb://" + uri.getHost() + uri.getPath());
+            logger.warn("smb://" + uri.getHost() + uri.getPath());
             smbPath = "smb://" + uri.getHost() + uri.getPath();
         }
         else
@@ -98,11 +95,12 @@ public class SmbMessageReceiver extends AbstractPollingMessageReceiver
         {
             logger.debug("Poll encountered " + files.length + " new file(s)");
         }
+
         synchronized (scheduledFiles)
         {
-            for (final SmbFile file : files)
+            for (SmbFile file : files)
             {
-                final String fileName = file.getName();
+                String fileName = file.getName();
 
                 if (!scheduledFiles.contains(fileName) && !currentFiles.contains(fileName))
                 {
@@ -147,8 +145,6 @@ public class SmbMessageReceiver extends AbstractPollingMessageReceiver
 
     protected void processFile(SmbFile file) throws Exception
     {
-        MuleMessage message = null;
-        SmbFileInputStream stream = null;
         try
         {
             if (!connector.validateFile(file))
@@ -157,17 +153,8 @@ public class SmbMessageReceiver extends AbstractPollingMessageReceiver
             }
             else
             {
-                stream = new SmbFileInputStream(file);
-                byte[] data = new byte[(int)file.length()];
-                stream.read(data);
-                message = new DefaultMuleMessage(connector.getMessageAdapter(data));
-                message.setProperty(FileConnector.PROPERTY_ORIGINAL_FILENAME, file.getName());
-                message.setProperty(FileConnector.PROPERTY_FILE_SIZE, file.length());
+                MuleMessage message = createMuleMessage(file);
                 routeMessage(message);
-                if (stream != null)
-                {
-                    stream.close();
-                }
                 postProcess(file, message);
             }
         }

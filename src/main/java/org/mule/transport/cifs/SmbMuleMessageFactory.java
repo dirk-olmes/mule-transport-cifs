@@ -10,8 +10,15 @@
 
 package org.mule.transport.cifs;
 
+import org.mule.DefaultMuleMessage;
 import org.mule.api.MuleContext;
 import org.mule.transport.AbstractMuleMessageFactory;
+import org.mule.transport.file.FileConnector;
+import org.mule.util.IOUtils;
+
+import java.io.InputStream;
+
+import jcifs.smb.SmbFile;
 
 public class SmbMuleMessageFactory extends AbstractMuleMessageFactory
 {
@@ -23,14 +30,27 @@ public class SmbMuleMessageFactory extends AbstractMuleMessageFactory
     @Override
     protected Class<?>[] getSupportedTransportMessageTypes()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return new Class[] { SmbFile.class };
     }
 
     @Override
     protected Object extractPayload(Object transportMessage, String encoding) throws Exception
     {
-        // TODO Auto-generated method stub
-        return null;
+        SmbFile file = (SmbFile) transportMessage;
+
+        InputStream stream = file.getInputStream();
+        byte[] data = IOUtils.toByteArray(stream);
+        stream.close();
+
+        return data;
+    }
+
+    @Override
+    protected void addProperties(DefaultMuleMessage muleMessage, Object transportMessage) throws Exception
+    {
+        SmbFile file = (SmbFile) transportMessage;
+
+        muleMessage.setOutboundProperty(FileConnector.PROPERTY_ORIGINAL_FILENAME, file.getName());
+        muleMessage.setOutboundProperty(FileConnector.PROPERTY_FILE_SIZE, file.length());
     }
 }

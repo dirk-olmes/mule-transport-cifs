@@ -220,6 +220,7 @@ public class SmbConnector extends AbstractConnector
         return outputPattern;
     }
 
+    // TODO replace with StringUtils
     public static boolean checkNullOrBlank(String validate)
     {
         return (validate == null || validate.equals(""));
@@ -301,7 +302,7 @@ public class SmbConnector extends AbstractConnector
      */
     protected boolean validateFile(SmbFile file)
     {
-        if (getCheckFileAge())
+        if (checkFileAge)
         {
             long fileAge = getFileAge();
             long lastMod = file.getLastModified();
@@ -312,7 +313,10 @@ public class SmbConnector extends AbstractConnector
                          + ", lastMod = " + lastMod);
             if (thisFileAge < fileAge)
             {
-                logger.debug("The file has not aged enough yet, will return nothing for: " + file.getName());
+                if (logger.isInfoEnabled())
+                {
+                    logger.info("The file has not aged enough yet, will return nothing for: " + file.getName());
+                }
                 return false;
             }
         }
