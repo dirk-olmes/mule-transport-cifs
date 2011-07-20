@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:spring="http://www.springframework.org/schema/beans"
+      xmlns:smb="http://www.mulesoft.org/schema/mule/smb"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/3.1/mule.xsd
+        http://www.mulesoft.org/schema/mule/smb http://www.mulesoft.org/schema/mule/smb/3.1/mule-smb.xsd">
+
+    <smb:connector name="smbConnector" fileAge="42" moveToPattern="#[function:uuid]"/>
+
+<!--     <smb:endpoint name="smbOutboundEndpoint" path="C$/TEMP" -->
+<!--         user="masonshoe;ajr" password="********" host="adamriley"/> -->
+
+    <!--
+    <smb:endpoint name="smbInboundEndpoint" path=""
+        user="masonshoe;ajr" password="07Admar1177" host="adamriley">
+    </smb:endpoint>
+    -->
+
+<!--     <model name="smbConnectorTestModel"> -->
+
+<!--         <service name="smbConnectorTestService"> -->
+<!--             <inbound> -->
+                <!--
+                <smb:inbound-endpoint address="smb://masonshoe;ajr:07Admar1177@adamriley/C$/TEMP/smbIn.txt" />
+                -->
+
+<!--                 <smb:inbound-endpoint pollingFrequency="5000" -->
+<!--                     path="C$/TEMP/" user="masonshoe;ajr" password="********" host="adamriley" -->
+<!--                     synchronous="true" responseTimeout="10000"> -->
+<!--                     <file:filename-wildcard-filter pattern="test*"/> -->
+<!--                 </smb:inbound-endpoint> -->
+
+<!--                 <vm:inbound-endpoint path="testLauncher" -->
+<!--                     synchronous="true" responseTimeout="10000"> -->
+<!--                 </vm:inbound-endpoint> -->
+
+<!--             </inbound> -->
+<!--             <outbound> -->
+<!--                 <pass-through-router> -->
+<!--                     <vm:outbound-endpoint path="smbConnectorTestSmbServicePath" /> -->
+<!--                 </pass-through-router> -->
+<!--             </outbound> -->
+<!--         </service> -->
+
+<!--         <service name="smbConnectorTestSmbService"> -->
+<!--             <inbound> -->
+<!--                 <vm:inbound-endpoint path="smbConnectorTestSmbServicePath" /> -->
+<!--             </inbound> -->
+<!--             <outbound> -->
+<!--                 <pass-through-router> -->
+<!--                     <smb:outbound-endpoint ref="smbOutboundEndpoint" -->
+<!--                         outputPattern="C$/TEMP/smbTest-${DATE:yyyyMMddHHmmss}.txt"> -->
+<!--                     </smb:outbound-endpoint> -->
+<!--                 </pass-through-router> -->
+<!--             </outbound> -->
+<!--         </service> -->
+
+<!--     </model> -->
+</mule>

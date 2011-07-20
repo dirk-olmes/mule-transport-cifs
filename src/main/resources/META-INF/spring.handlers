@@ -1,0 +1,1 @@
+http\://www.mulesoft.org/schema/mule/smb=org.mule.transport.cifs.config.SmbNamespaceHandler

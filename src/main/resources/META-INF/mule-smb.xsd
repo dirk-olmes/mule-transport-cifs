@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xsd:schema xmlns="http://www.mulesoft.org/schema/mule/smb"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:mule="http://www.mulesoft.org/schema/mule/core"
+    xmlns:file="http://www.mulesoft.org/schema/mule/file"
+    xmlns:schemadoc="http://www.mulesoft.org/schema/mule/schemadoc"
+    targetNamespace="http://www.mulesoft.org/schema/mule/smb"
+    elementFormDefault="qualified"
+    attributeFormDefault="unqualified">
+
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:import namespace="http://www.mulesoft.org/schema/mule/core"
+        schemaLocation="http://www.mulesoft.org/schema/mule/core/3.1/mule.xsd" />
+    <xsd:import namespace="http://www.mulesoft.org/schema/mule/file"
+        schemaLocation="http://www.mulesoft.org/schema/mule/file/3.1/mule-file.xsd" />
+    <xsd:import namespace="http://www.mulesoft.org/schema/mule/schemadoc"
+        schemaLocation="http://www.mulesoft.org/schema/mule/schemadoc/3.1/mule-schemadoc.xsd" />
+
+    <xsd:annotation>
+        <xsd:documentation>Provides ability to use windows network shares</xsd:documentation>
+        <xsd:appinfo>
+            <schemadoc:short-name>Smb</schemadoc:short-name>
+            <schemadoc:page-title>Smb Transport</schemadoc:page-title>
+            <schemadoc:transport-features receiveEvents="true" dispatchEvents="true" responseEvents="false"
+                                          requestEvents="true"
+                                          transactions="false" streaming="false">
+                <schemadoc:MEPs supported="one-way" default="one-way"/>
+            </schemadoc:transport-features>
+        </xsd:appinfo>
+    </xsd:annotation>
+
+    <xsd:element name="connector" type="smbConnectorType" substitutionGroup="mule:abstract-connector">
+        <xsd:annotation>
+            <xsd:documentation>
+                Provides a connector to use windows network shares
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:complexType name="smbConnectorType">
+        <xsd:complexContent>
+            <xsd:extension base="mule:connectorType">
+                <xsd:sequence minOccurs="0" maxOccurs="1">
+                    <xsd:element ref="file:abstract-filenameParser">
+                        <xsd:annotation>
+                            <xsd:documentation>
+                                The filenameParser is used when writing files. The parser will convert the outputPattern attribute to a string using the parser and the current message. To add a parser to your configuration, you import the "file" namespace into your XML configuration. For more information about filenameParsers, see the [File Transport].
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                </xsd:sequence>
+                <xsd:attribute name="fileAge" type="mule:substitutableLong">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            Miniumum age (ms) for a file to be processed.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="moveToPattern" type="xsd:string">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            The pattern to use when moving a read file to an new location determined by the
+                            moveToDirectory property.
+                            This can use the patterns supported by the filename-parser configured for this connector
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="moveToDirectory" type="xsd:string">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            The directory path where the file should be written once it has been read.
+                            If this is not set the file read is deleted.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attributeGroup ref="inboundAttributes" />
+                <xsd:attributeGroup ref="outboundAttributes" />
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:element name="inbound-endpoint" type="inboundEndpointType" substitutionGroup="mule:abstract-inbound-endpoint" />
+    <xsd:complexType name="inboundEndpointType">
+        <xsd:complexContent>
+            <xsd:extension base="mule:inboundEndpointType">
+                <xsd:attributeGroup ref="addressAttributes" />
+                <xsd:attributeGroup ref="inboundAttributes" />
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:element name="outbound-endpoint" type="outboundEndpointType" substitutionGroup="mule:abstract-outbound-endpoint" />
+    <xsd:complexType name="outboundEndpointType">
+        <xsd:complexContent>
+            <xsd:extension base="mule:outboundEndpointType">
+                <xsd:attributeGroup ref="addressAttributes" />
+                <xsd:attributeGroup ref="outboundAttributes" />
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:element name="endpoint" type="globalEndpointType" substitutionGroup="mule:abstract-global-endpoint" />
+    <xsd:complexType name="globalEndpointType">
+        <xsd:complexContent>
+            <xsd:extension base="mule:globalEndpointType">
+                <xsd:attributeGroup ref="addressAttributes" />
+                <xsd:attributeGroup ref="inboundAttributes" />
+                <xsd:attributeGroup ref="outboundAttributes" />
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:attributeGroup name="inboundAttributes">
+        <xsd:attribute name="pollingFrequency" type="mule:substitutableLong">
+            <xsd:annotation>
+                <xsd:documentation>
+                    How frequently in milliseconds to check the read directory. Note that the read directory is specified by the endpoint of the listening component.
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:attributeGroup>
+
+    <xsd:attributeGroup name="outboundAttributes">
+        <xsd:attribute name="outputPattern" type="xsd:string">
+            <xsd:annotation>
+                <xsd:documentation>
+                    The pattern to use when writing a file to disk. This can use the patterns supported by the filename-parser configured for this connector
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:attributeGroup>
+
+    <xsd:attributeGroup name="addressAttributes">
+        <xsd:attribute name="path" type="xsd:string">
+            <xsd:annotation>
+                <xsd:documentation>
+                    A file location on the remote server.
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="user" type="xsd:string">
+            <xsd:annotation>
+                <xsd:documentation>
+                    The "domain;username" used for authenitcation.
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="password" type="xsd:string">
+            <xsd:annotation>
+                <xsd:documentation>
+                    The password for the user being authenticated.
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="host" type="xsd:string">
+            <xsd:annotation>
+                <xsd:documentation>
+                    An IP address (such as www.mulesoft.com, localhost, or 192.168.0.1).
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:attributeGroup>
+</xsd:schema>
