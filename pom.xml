@@ -40,7 +40,7 @@
             <uniqueVersion>false</uniqueVersion>
         </snapshotRepository>
     </distributionManagement>
-    
+
     <build>
         <plugins>
             <plugin>
