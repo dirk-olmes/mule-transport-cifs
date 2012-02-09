@@ -27,9 +27,9 @@ public class SmbUtil
         if (StringUtils.isNotBlank(getUsername()) && StringUtils.isNotBlank(getPassword())
             && StringUtils.isNotBlank(getHost()))
         {
-            return false;
+            return true;
         }
-        return true;
+        return false;
     }
 
     public static String getUsername()

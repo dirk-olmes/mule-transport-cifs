@@ -20,7 +20,13 @@ public abstract class AbstractSmbTestCase extends FunctionalTestCase
     @Override
     protected boolean isDisabledInThisEnvironment()
     {
-        return SmbUtil.environmentIsSet();
+        boolean environmentIsSet = SmbUtil.environmentIsSet();
+        if (environmentIsSet == false)
+        {
+            logger.warn("Test ist disabled because the required system properties were not set");
+            return true;
+        }
+        return false;
     }
 
     public void assertEquals(byte[] bytes1, byte[] bytes2)
