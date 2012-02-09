@@ -49,12 +49,12 @@ public class SmbMessageReceiver extends AbstractPollingMessageReceiver
     /**
      * This constructor is only used for instantiating the receiver from the connector test case
      */
-    @Deprecated
-    public SmbMessageReceiver(Connector connector, FlowConstruct flowConstruct, InboundEndpoint endpoint)
-        throws CreateException
-    {
-        this(connector, flowConstruct, endpoint, DEFAULT_POLL_FREQUENCY, null, null, 0);
-    }
+//    @Deprecated
+//    public SmbMessageReceiver(Connector connector, FlowConstruct flowConstruct, InboundEndpoint endpoint)
+//        throws CreateException
+//    {
+//        this(connector, flowConstruct, endpoint, DEFAULT_POLL_FREQUENCY, null, null, 0);
+//    }
 
     public SmbMessageReceiver(Connector connector, FlowConstruct flowConstruct, InboundEndpoint endpoint,
         long frequency, String moveToDir, String moveToPattern, long fileAge) throws CreateException

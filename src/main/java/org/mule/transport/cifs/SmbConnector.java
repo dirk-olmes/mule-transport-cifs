@@ -15,12 +15,12 @@ import org.mule.api.MuleEvent;
 import org.mule.api.MuleException;
 import org.mule.api.MuleMessage;
 import org.mule.api.config.ConfigurationException;
+import org.mule.api.construct.FlowConstruct;
 import org.mule.api.endpoint.EndpointURI;
 import org.mule.api.endpoint.ImmutableEndpoint;
 import org.mule.api.endpoint.InboundEndpoint;
 import org.mule.api.endpoint.OutboundEndpoint;
 import org.mule.api.lifecycle.InitialisationException;
-import org.mule.api.service.Service;
 import org.mule.api.transport.DispatchException;
 import org.mule.api.transport.MessageReceiver;
 import org.mule.config.i18n.CoreMessages;
@@ -29,8 +29,6 @@ import org.mule.transport.file.ExpressionFilenameParser;
 import org.mule.transport.file.FilenameParser;
 
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import jcifs.smb.SmbFile;
@@ -40,7 +38,7 @@ public class SmbConnector extends AbstractConnector
     /* This constant defines the main transport protocol identifier */
     public static final String SMB = "smb";
     // only
-    public static final int DEFAULT_POLLING_FREQUENCY = 1000;
+    public static final long DEFAULT_POLLING_FREQUENCY = 1000;
     public static final String PROPERTY_OUTPUT_PATTERN = "outputPattern"; // outbound
     // only
     public static final String PROPERTY_FILENAME = "filename";
@@ -231,70 +229,12 @@ public class SmbConnector extends AbstractConnector
         return SMB;
     }
 
-    public MessageReceiver createReceiver(Service service, InboundEndpoint endpoint) throws Exception
+    @Override
+    public MessageReceiver createReceiver(FlowConstruct flowConstruct, InboundEndpoint endpoint) throws Exception
     {
-        List args = getReceiverArguments(endpoint.getProperties());
-        return serviceDescriptor.createMessageReceiver(this, service, endpoint, args.toArray());
-    }
-
-    protected List getReceiverArguments(Map endpointProperties)
-    {
-        List args = new ArrayList();
-
-        long polling = getPollingFrequency();
-        String moveToDir = getMoveToDirectory();
-        String moveToPattern = getMoveToPattern();
-
-        if (endpointProperties != null)
-        {
-            // Override properties on the endpoint for the specific endpoint
-            String tempPolling = (String)endpointProperties.get(PROPERTY_POLLING_FREQUENCY);
-            if (tempPolling != null)
-            {
-                polling = Long.parseLong(tempPolling);
-            }
-
-            String move = (String)endpointProperties.get(PROPERTY_MOVE_TO_DIRECTORY);
-            if (move != null)
-            {
-                moveToDir = move;
-            }
-
-            String tempMoveToPattern = (String)endpointProperties.get(PROPERTY_MOVE_TO_PATTERN);
-            if (tempMoveToPattern != null)
-            {
-                logger.debug("set moveTo Pattern to: " + tempMoveToPattern);
-                moveToPattern = tempMoveToPattern;
-            }
-
-            String tempFileAge = (String)endpointProperties.get(PROPERTY_FILE_AGE);
-            if (tempFileAge != null)
-            {
-                try
-                {
-                    logger.debug("set fileAge to: " + tempFileAge + "millisec");
-                    setFileAge(Long.parseLong(tempFileAge));
-                }
-                catch (Exception ex1)
-                {
-                    logger.error("Failed to set fileAge", ex1);
-                }
-            }
-
-        }
-
-        if (polling <= 0)
-        {
-            polling = DEFAULT_POLLING_FREQUENCY;
-        }
-
-        logger.debug("set polling frequency to " + polling);
-        args.add(polling);
-        args.add(moveToDir != null ? moveToDir : "");
-        args.add(moveToPattern != null ? moveToPattern : "");
-        args.add(new Long(fileAge));
-
-        return args;
+        Map<?, ?> endpointProperties = endpoint.getProperties();
+        Object[] additionalArguments = new SmbReceiverArguments(this, endpointProperties).asArray();
+        return serviceDescriptor.createMessageReceiver(this, flowConstruct, endpoint, additionalArguments);
     }
 
     /**
