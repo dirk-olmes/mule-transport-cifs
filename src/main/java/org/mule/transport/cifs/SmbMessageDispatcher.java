@@ -33,19 +33,8 @@ public class SmbMessageDispatcher extends AbstractMessageDispatcher
     @Override
     public void doDispatch(MuleEvent event) throws Exception
     {
-        /*
-         * IMPLEMENTATION NOTE: This is invoked when the endpoint is asynchronous. It
-         * should invoke the transport but not return any result. If a result is
-         * returned it should be ignorred, but if the underlying transport does have
-         * a notion of asynchronous processing, that should be invoked. This method
-         * is executed in a different thread to the request thread.
-         */
-
-        // TODO Write the client code here to dispatch the event over this
-        // transport
-        // throw new UnsupportedOperationException("doDispatch");
-        Object data = event.transformMessage();
-        OutputStream out = smbConnector.getOutputStream((OutboundEndpoint) event.getEndpoint(), event);
+        Object data = event.getMessage().getPayload();
+        OutputStream out = smbConnector.getOutputStream(getEndpoint(), event);
 
         try
         {
@@ -79,20 +68,6 @@ public class SmbMessageDispatcher extends AbstractMessageDispatcher
     @Override
     public MuleMessage doSend(MuleEvent event) throws Exception
     {
-        /*
-         * IMPLEMENTATION NOTE: Should send the event payload over the transport. If
-         * there is a response from the transport it shuold be returned from this
-         * method. The sendEvent method is called when the endpoint is running
-         * synchronously and any response returned will ultimately be passed back to
-         * the callee. This method is executed in the same thread as the request
-         * thread.
-         */
-
-        // TODO Write the client code here to send the event over this
-        // transport (or to dispatch the event to a store or repository)
-        // TODO Once the event has been sent, return the result (if any)
-        // wrapped in a MuleMessage object
-        // throw new UnsupportedOperationException("doSend");
         doDispatch(event);
         return null;
     }

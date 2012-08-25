@@ -258,7 +258,7 @@ public class SmbMessageReceiver extends AbstractPollingMessageReceiver
             }
             catch (Exception e)
             {
-                connector.handleException(e);
+                connector.getMuleContext().getExceptionListener().handleException(e);
             }
             finally
             {
