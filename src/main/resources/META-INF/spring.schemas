@@ -1,1 +1,2 @@
-http\://www.mulesoft.org/schema/mule/smb/3.1/mule-smb.xsd=META-INF/mule-smb.xsd
+http\://www.mulesoft.org/schema/mule/smb/3.3/mule-smb.xsd=META-INF/mule-smb.xsd
+http\://www.mulesoft.org/schema/mule/smb/current/mule-smb.xsd=META-INF/mule-smb.xsd
