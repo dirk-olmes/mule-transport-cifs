@@ -15,6 +15,10 @@ import org.mule.api.MuleMessage;
 import org.mule.transport.cifs.util.SmbUtil;
 import org.mule.transport.file.FileConnector;
 
+import org.junit.Assert;
+
+import static org.junit.Assert.assertNotNull;
+
 public class SmbInboundTestCase extends AbstractSmbTestCase
 {
     @Override
@@ -40,6 +44,6 @@ public class SmbInboundTestCase extends AbstractSmbTestCase
         MuleMessage result = muleContext.getClient().request("vm://data", RECEIVE_TIMEOUT);
         assertNotNull(result);
         assertEquals(TEST_MESSAGE.getBytes(), (byte[]) result.getPayload());
-        assertEquals("input.txt", result.getOutboundProperty(FileConnector.PROPERTY_ORIGINAL_FILENAME));
+        Assert.assertEquals("input.txt", result.getOutboundProperty(FileConnector.PROPERTY_ORIGINAL_FILENAME));
     }
 }

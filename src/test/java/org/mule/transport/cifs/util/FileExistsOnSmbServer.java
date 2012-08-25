@@ -11,7 +11,8 @@
 package org.mule.transport.cifs.util;
 
 import org.mule.tck.probe.Probe;
-import org.mule.transport.cifs.functional.SmbOutboundTestCase;
+
+import static org.junit.Assert.fail;
 
 public class FileExistsOnSmbServer implements Probe
 {
@@ -31,7 +32,7 @@ public class FileExistsOnSmbServer implements Probe
         }
         catch (Exception ex)
         {
-            SmbOutboundTestCase.fail(ex.getMessage());
+            fail(ex.getMessage());
 
             // this is not strictly necessary but the compiler insists on it
             return false;

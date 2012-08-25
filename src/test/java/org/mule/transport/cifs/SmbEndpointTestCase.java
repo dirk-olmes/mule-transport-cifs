@@ -12,9 +12,11 @@ package org.mule.transport.cifs;
 
 import org.mule.api.endpoint.EndpointURI;
 import org.mule.endpoint.MuleEndpointURI;
-import org.mule.tck.AbstractMuleTestCase;
+import org.mule.tck.junit4.AbstractMuleContextTestCase;
 
-public class SmbEndpointTestCase extends AbstractMuleTestCase
+import static org.junit.Assert.assertEquals;
+
+public class SmbEndpointTestCase extends AbstractMuleContextTestCase
 {
 	public void testValidEndpointURI() throws Exception
     {

@@ -10,10 +10,12 @@
 
 package org.mule.transport.cifs.functional;
 
-import org.mule.tck.FunctionalTestCase;
+import org.mule.tck.junit4.FunctionalTestCase;
 import org.mule.transport.cifs.util.SmbUtil;
 
 import java.util.Arrays;
+
+import static org.junit.Assert.assertTrue;
 
 public abstract class AbstractSmbTestCase extends FunctionalTestCase
 {

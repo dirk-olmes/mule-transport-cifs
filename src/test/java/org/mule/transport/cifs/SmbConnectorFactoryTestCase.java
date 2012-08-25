@@ -11,9 +11,13 @@
 package org.mule.transport.cifs;
 
 import org.mule.api.endpoint.InboundEndpoint;
-import org.mule.tck.AbstractMuleTestCase;
+import org.mule.tck.junit4.AbstractMuleContextTestCase;
 
-public class SmbConnectorFactoryTestCase extends AbstractMuleTestCase
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+public class SmbConnectorFactoryTestCase extends AbstractMuleContextTestCase
 {
     public void testCreateFromFactory() throws Exception
     {
