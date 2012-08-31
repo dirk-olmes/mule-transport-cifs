@@ -10,29 +10,45 @@
 
 package org.mule.transport.cifs.functional;
 
-import org.mule.api.MuleException;
+import org.mule.api.MuleEventContext;
 import org.mule.api.MuleMessage;
+import org.mule.tck.functional.EventCallback;
+import org.mule.tck.functional.FunctionalTestComponent;
 import org.mule.transport.cifs.util.SmbUtil;
 import org.mule.transport.file.FileConnector;
+import org.mule.util.concurrent.Latch;
+
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class SmbInboundTestCase extends AbstractSmbTestCase
 {
+    private MuleMessage message;
+    private Latch messageReceived = new Latch();
+
     @Override
     protected String getConfigResources()
     {
         return "smb-inbound-config.xml";
     }
 
-    @Override
-    protected void doSetUp() throws Exception
+    @Test
+    public void messageShouldBeReceivedFromSmbServer() throws Exception
     {
+        FunctionalTestComponent ftc = (FunctionalTestComponent) getComponent("smbInbound");
+        ftc.setEventCallback(new InboundEventCallback());
+
         putFile();
-        super.doSetUp();
+
+        assertTrue(messageReceived.await(30, TimeUnit.SECONDS));
+        assertNotNull(message);
+        assertEquals(TEST_MESSAGE.getBytes(), message.getPayloadAsBytes());
+        Assert.assertEquals("input.txt", message.getOutboundProperty(FileConnector.PROPERTY_ORIGINAL_FILENAME));
     }
 
     private void putFile() throws Exception
@@ -40,13 +56,12 @@ public class SmbInboundTestCase extends AbstractSmbTestCase
         new SmbUtil().createFile("input.txt", TEST_MESSAGE);
     }
 
-    @Test
-    public void messageWasReceivedFromSmbServer() throws MuleException
+    private class InboundEventCallback implements EventCallback
     {
-//        MuleMessage result = muleContext.getClient().request("vm://data", RECEIVE_TIMEOUT);
-        MuleMessage result = muleContext.getClient().request("vm://data", Long.MAX_VALUE);
-        assertNotNull(result);
-        assertEquals(TEST_MESSAGE.getBytes(), (byte[]) result.getPayload());
-        Assert.assertEquals("input.txt", result.getOutboundProperty(FileConnector.PROPERTY_ORIGINAL_FILENAME));
+        public void eventReceived(MuleEventContext context, Object component) throws Exception
+        {
+            message = context.getMessage();
+            messageReceived.countDown();
+        }
     }
 }
