@@ -14,11 +14,14 @@ import org.mule.api.endpoint.EndpointURI;
 import org.mule.endpoint.MuleEndpointURI;
 import org.mule.tck.junit4.AbstractMuleContextTestCase;
 
+import org.junit.Test;
+
 import static org.junit.Assert.assertEquals;
 
 public class SmbEndpointTestCase extends AbstractMuleContextTestCase
 {
-	public void testValidEndpointURI() throws Exception
+    @Test
+	public void validEndpointURI() throws Exception
     {
     	String url = "smb://masonshoe;ajr:07Admar1177@172.16.2.23/C$/TEMP/hello.txt";
         EndpointURI uri = new MuleEndpointURI(url, muleContext);

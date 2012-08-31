@@ -13,6 +13,8 @@ package org.mule.transport.cifs;
 import org.mule.tck.junit4.FunctionalTestCase;
 import org.mule.transport.file.ExpressionFilenameParser;
 
+import org.junit.Test;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -31,6 +33,7 @@ public class SmbNamespaceHandlerTestCase extends FunctionalTestCase
         return "smb-namespace-config.xml";
     }
 
+    @Test
     public void testSmbConfig() throws Exception
     {
         SmbConnector connector = (SmbConnector) muleContext.getRegistry().lookupConnector("smbConnector");

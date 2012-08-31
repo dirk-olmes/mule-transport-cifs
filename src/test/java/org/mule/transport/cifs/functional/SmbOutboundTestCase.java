@@ -14,6 +14,7 @@ import org.mule.tck.probe.PollingProber;
 import org.mule.transport.cifs.util.FileExistsOnSmbServer;
 import org.mule.transport.cifs.util.SmbUtil;
 
+import org.junit.Test;
 
 public class SmbOutboundTestCase extends AbstractSmbTestCase
 {
@@ -23,7 +24,8 @@ public class SmbOutboundTestCase extends AbstractSmbTestCase
         return "smb-outbound-config.xml";
     }
 
-    public void testFileWasSentToSmbServer() throws Exception
+    @Test
+    public void fileWasSentToSmbServer() throws Exception
     {
         muleContext.getClient().dispatch("vm://data", TEST_MESSAGE, null);
         new PollingProber(10000, 1000).check(new FileExistsOnSmbServer("out.txt"));

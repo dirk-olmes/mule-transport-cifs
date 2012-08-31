@@ -20,6 +20,8 @@ import java.util.Arrays;
 
 import jcifs.smb.SmbFile;
 
+import org.junit.Test;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -65,7 +67,8 @@ public class SmbMuleMessageFactoryTestCase extends AbstractMuleMessageFactoryTes
         assertTrue(Arrays.equals(MOCK_CONTENT, (byte[]) payload));
     }
 
-    public void testMessageProperties() throws Exception
+    @Test
+    public void messageShouldHaveTransportSpecificMessageProperties() throws Exception
     {
         MuleMessage message = createMuleMessageFromValidTransportMessage();
         assertEquals(MOCK_FILENAME, message.getOutboundProperty(FileConnector.PROPERTY_ORIGINAL_FILENAME));

@@ -16,6 +16,7 @@ import org.mule.transport.cifs.util.SmbUtil;
 import org.mule.transport.file.FileConnector;
 
 import org.junit.Assert;
+import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -39,9 +40,11 @@ public class SmbInboundTestCase extends AbstractSmbTestCase
         new SmbUtil().createFile("input.txt", TEST_MESSAGE);
     }
 
-    public void testMessageWasReceivedFromSmbServer() throws MuleException
+    @Test
+    public void messageWasReceivedFromSmbServer() throws MuleException
     {
-        MuleMessage result = muleContext.getClient().request("vm://data", RECEIVE_TIMEOUT);
+//        MuleMessage result = muleContext.getClient().request("vm://data", RECEIVE_TIMEOUT);
+        MuleMessage result = muleContext.getClient().request("vm://data", Long.MAX_VALUE);
         assertNotNull(result);
         assertEquals(TEST_MESSAGE.getBytes(), (byte[]) result.getPayload());
         Assert.assertEquals("input.txt", result.getOutboundProperty(FileConnector.PROPERTY_ORIGINAL_FILENAME));

@@ -11,7 +11,7 @@
         http://www.mulesoft.org/schema/mule/smb http://www.mulesoft.org/schema/mule/smb/3.1/mule-smb.xsd">
 
     <flow name="smb2vm">
-        <!-- the smb. properties must be set a system properties -->
+        <!-- the smb. properties must be set as system properties -->
         <smb:inbound-endpoint address="smb://${smb.user}:${smb.password}@${smb.host}/mule-share/"/>
         <vm:outbound-endpoint path="data"/>
     </flow>
