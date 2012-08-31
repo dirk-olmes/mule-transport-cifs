@@ -18,19 +18,29 @@ import org.junit.Test;
 
 public class SmbOutboundTestCase extends AbstractSmbTestCase
 {
+    private static final String OUTPUT_FILENAME = "out.txt";
+
+
     @Override
     protected String getConfigResources()
     {
         return "smb-outbound-config.xml";
     }
 
+    @Override
+    protected void doTearDown() throws Exception
+    {
+        super.doTearDown();
+        new SmbUtil().deleteFile(OUTPUT_FILENAME);
+    }
+
     @Test
     public void fileWasSentToSmbServer() throws Exception
     {
         muleContext.getClient().dispatch("vm://data", TEST_MESSAGE, null);
-        new PollingProber(10000, 1000).check(new FileExistsOnSmbServer("out.txt"));
+        new PollingProber(10000, 1000).check(new FileExistsOnSmbServer(OUTPUT_FILENAME));
 
-        byte[] contents = new SmbUtil().getContentsOfFile("out.txt");
+        byte[] contents = new SmbUtil().getContentsOfFile(OUTPUT_FILENAME);
         assertEquals(TEST_MESSAGE.getBytes(), contents);
     }
 }

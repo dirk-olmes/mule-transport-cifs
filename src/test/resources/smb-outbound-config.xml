@@ -15,7 +15,7 @@
     <flow name="vm2smb">
         <vm:inbound-endpoint path="data"/>
 
-        <!-- the smb. properties must be set a system properties -->
+        <!-- the smb. properties must be set as system properties -->
         <smb:outbound-endpoint address="smb://${smb.user}:${smb.password}@${smb.host}/mule-share/"/>
     </flow>
 </mule>

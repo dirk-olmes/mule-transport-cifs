@@ -14,6 +14,7 @@ import org.mule.util.IOUtils;
 import org.mule.util.StringUtils;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 
@@ -63,6 +64,15 @@ public class SmbUtil
         }
     }
 
+    public void deleteFile(String filename) throws IOException
+    {
+        SmbFile file = createSmbFile(filename);
+        if (file.exists())
+        {
+            file.delete();
+        }
+    }
+
     public boolean fileExists(String filename) throws MalformedURLException, SmbException
     {
         SmbFile file = createSmbFile(filename);
@@ -72,7 +82,17 @@ public class SmbUtil
     public byte[] getContentsOfFile(String filename) throws IOException
     {
         SmbFile file = createSmbFile(filename);
-        return IOUtils.toByteArray(file.getInputStream());
+
+        InputStream in = null;
+        try
+        {
+            in = file.getInputStream();
+            return IOUtils.toByteArray(in);
+        }
+        finally
+        {
+            IOUtils.closeQuietly(in);
+        }
     }
 
     private SmbFile createSmbFile(String filename) throws MalformedURLException
