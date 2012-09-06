@@ -13,11 +13,9 @@ package org.mule.transport.cifs;
 import org.mule.api.MuleContext;
 import org.mule.api.MuleEvent;
 import org.mule.api.MuleException;
-import org.mule.api.MuleMessage;
 import org.mule.api.config.ConfigurationException;
 import org.mule.api.construct.FlowConstruct;
 import org.mule.api.endpoint.EndpointURI;
-import org.mule.api.endpoint.ImmutableEndpoint;
 import org.mule.api.endpoint.InboundEndpoint;
 import org.mule.api.endpoint.OutboundEndpoint;
 import org.mule.api.lifecycle.InitialisationException;
@@ -45,7 +43,7 @@ public class SmbConnector extends AbstractConnector
     private long pollingFrequency;
     private String outputPattern;
 
-    private FilenameParser filenameParser = new ExpressionFilenameParser();
+    private FilenameParser filenameParser;
 
     public static final String PROPERTY_FILE_AGE = "fileAge"; // inbound only
     public static final String PROPERTY_MOVE_TO_PATTERN = "moveToPattern"; // inbound
@@ -61,6 +59,9 @@ public class SmbConnector extends AbstractConnector
     public SmbConnector(MuleContext context)
     {
         super(context);
+
+        filenameParser = new ExpressionFilenameParser();
+        filenameParser.setMuleContext(context);
     }
 
     /*
@@ -146,13 +147,14 @@ public class SmbConnector extends AbstractConnector
     @Override
     public OutputStream getOutputStream(OutboundEndpoint endpoint, MuleEvent event) throws MuleException
     {
-        SmbFile smbFile;
-        OutputStream os = null;
-        String filename = getFilename(endpoint, event.getMessage());
-        EndpointURI uri = endpoint.getEndpointURI();
+        OutputStream stream = null;
 
+        SmbFile smbFile;
         try
         {
+            String filename = getFilename(endpoint, event);
+            EndpointURI uri = endpoint.getEndpointURI();
+
             if (checkNullOrBlank(uri.getUser()) || checkNullOrBlank(uri.getPassword()))
             {
                 logger.warn("No user or password supplied. Attempting to connect with just smb://<host>/<path>");
@@ -166,46 +168,32 @@ public class SmbConnector extends AbstractConnector
                 smbFile = new SmbFile("smb://" + uri.getUser() + ":" + uri.getPassword() + "@"
                                       + uri.getHost() + uri.getPath() + filename);
             }
+
             if (!smbFile.exists())
             {
                 smbFile.createNewFile();
             }
-            os = smbFile.getOutputStream();
+
+            stream = smbFile.getOutputStream();
         }
         catch (Exception e)
         {
             throw new DispatchException(CoreMessages.streamingFailedNoStream(), event, endpoint, e);
         }
 
-        return os;
+        return stream;
     }
 
-    private String getFilename(ImmutableEndpoint endpoint, MuleMessage message) throws MuleException
+    private String getFilename(OutboundEndpoint endpoint, MuleEvent event) throws MuleException
     {
-        String filename = (String)message.getProperty(SmbConnector.PROPERTY_FILENAME);
-        String outPattern = (String)endpoint.getProperty(SmbConnector.PROPERTY_OUTPUT_PATTERN);
-        if (outPattern == null)
-        {
-            outPattern = message.getStringProperty(SmbConnector.PROPERTY_OUTPUT_PATTERN, getOutputPattern());
-        }
-        if (outPattern != null || filename == null)
-        {
-            filename = generateFilename(message, outPattern);
-        }
+        String filename = new FilenameBuilder(this, endpoint).getFilename(event);
+
         if (filename == null)
         {
             throw new ConfigurationException(CoreMessages.objectIsNull("filename"));
         }
-        return filename;
-    }
 
-    private String generateFilename(MuleMessage message, String pattern)
-    {
-        if (pattern == null)
-        {
-            pattern = getOutputPattern();
-        }
-        return getFilenameParser().getFilename(message, pattern);
+        return filename;
     }
 
     public void setOutputPattern(String outputPattern)
