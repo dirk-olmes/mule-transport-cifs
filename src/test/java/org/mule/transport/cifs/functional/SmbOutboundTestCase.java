@@ -20,7 +20,6 @@ public class SmbOutboundTestCase extends AbstractSmbTestCase
 {
     private static final String OUTPUT_FILENAME = "out.txt";
 
-
     @Override
     protected String getConfigResources()
     {
@@ -31,7 +30,11 @@ public class SmbOutboundTestCase extends AbstractSmbTestCase
     protected void doTearDown() throws Exception
     {
         super.doTearDown();
-        new SmbUtil().deleteFile(OUTPUT_FILENAME);
+
+        if (isDisabledInThisEnvironment() == false)
+        {
+            new SmbUtil().deleteFile(OUTPUT_FILENAME);
+        }
     }
 
     @Test
