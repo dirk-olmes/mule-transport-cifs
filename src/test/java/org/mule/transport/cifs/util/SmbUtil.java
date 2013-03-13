@@ -50,18 +50,22 @@ public class SmbUtil
 
     public void createFile(String filename, String content) throws IOException
     {
-        SmbFile file = createSmbFile(filename);
-
         OutputStream outputStream = null;
         try
         {
-            outputStream = file.getOutputStream();
+            outputStream = openStream(filename);
             IOUtils.write(content, outputStream);
         }
         finally
         {
             IOUtils.closeQuietly(outputStream);
         }
+    }
+
+    public OutputStream openStream(String filename) throws IOException
+    {
+        SmbFile file = createSmbFile(filename);
+        return file.getOutputStream();
     }
 
     public void deleteFile(String filename) throws IOException
@@ -97,8 +101,8 @@ public class SmbUtil
 
     private SmbFile createSmbFile(String filename) throws MalformedURLException
     {
-        String url = String.format("smb://%s:%s@%s/mule-share/%s", getUsername(), getPassword(),
-            getHost(), filename);
+        String url = String.format("smb://%s:%s@%s/mule-share/%s", getUsername(), getPassword(), getHost(),
+            filename);
         return new SmbFile(url);
     }
 }
