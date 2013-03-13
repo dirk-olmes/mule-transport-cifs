@@ -232,14 +232,13 @@ public class SmbConnector extends AbstractConnector
     {
         if (checkFileAge)
         {
-            long fileAge = getFileAge();
             long lastMod = file.getLastModified();
             long now = System.currentTimeMillis();
-            long thisFileAge = now - lastMod;
+            long currentAge = now - lastMod;
 
-            logger.debug("fileAge = " + thisFileAge + ", expected = " + fileAge + ", now = " + now
+            logger.debug("fileAge = " + currentAge + ", expected = " + fileAge + ", now = " + now
                          + ", lastMod = " + lastMod);
-            if (thisFileAge < fileAge)
+            if (currentAge < fileAge)
             {
                 if (logger.isInfoEnabled())
                 {

@@ -40,7 +40,7 @@ public class SmbMessageReceiver extends AbstractPollingMessageReceiver
     private String moveToDir = "";
     private String moveToPattern = "";
     private long fileAge = 0;
-    protected final SmbConnector connector;
+    protected final SmbConnector smbConnector;
     protected final FilenameFilter filenameFilter;
     protected final String smbPath;
     protected final Set<String> scheduledFiles = Collections.synchronizedSet(new HashSet<String>());
@@ -66,7 +66,7 @@ public class SmbMessageReceiver extends AbstractPollingMessageReceiver
         this.moveToPattern = moveToPattern;
         this.fileAge = fileAge;
 
-        this.connector = (SmbConnector)connector;
+        this.smbConnector = (SmbConnector)connector;
 
         if (endpoint.getFilter() instanceof FilenameFilter)
         {
@@ -118,41 +118,34 @@ public class SmbMessageReceiver extends AbstractPollingMessageReceiver
 
     protected SmbFile[] listFiles() throws Exception
     {
-        try
+        SmbFile[] files = new SmbFile(smbPath).listFiles();
+
+        if (files == null || files.length == 0)
         {
-            SmbFile[] files = new SmbFile(smbPath).listFiles();
+            return files;
+        }
 
-            if (files == null || files.length == 0)
+        List<SmbFile> v = new ArrayList<SmbFile>();
+
+        for (SmbFile file : files)
+        {
+            if (file.isFile())
             {
-                return files;
-            }
-
-            List<SmbFile> v = new ArrayList<SmbFile>();
-
-            for (SmbFile file : files)
-            {
-                if (file.isFile())
+                if (filenameFilter == null || filenameFilter.accept(null, file.getName()))
                 {
-                    if (filenameFilter == null || filenameFilter.accept(null, file.getName()))
-                    {
-                        v.add(file);
-                    }
+                    v.add(file);
                 }
             }
+        }
 
-            return v.toArray(new SmbFile[v.size()]);
-        }
-        finally
-        {
-            // TODO
-        }
+        return v.toArray(new SmbFile[v.size()]);
     }
 
     protected void processFile(SmbFile file) throws Exception
     {
         try
         {
-            if (!connector.validateFile(file))
+            if (!smbConnector.validateFile(file))
             {
                 return;
             }
@@ -178,7 +171,7 @@ public class SmbMessageReceiver extends AbstractPollingMessageReceiver
 
             if (!StringUtils.isEmpty(moveToPattern))
             {
-                destinationFileName = (connector).getFilenameParser().getFilename(message, moveToPattern);
+                destinationFileName = (smbConnector).getFilenameParser().getFilename(message, moveToPattern);
             }
 
             SmbFile dest;
@@ -258,7 +251,7 @@ public class SmbMessageReceiver extends AbstractPollingMessageReceiver
             }
             catch (Exception e)
             {
-                connector.getMuleContext().getExceptionListener().handleException(e);
+                smbConnector.getMuleContext().getExceptionListener().handleException(e);
             }
             finally
             {

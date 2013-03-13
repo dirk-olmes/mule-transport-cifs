@@ -23,12 +23,12 @@ import jcifs.smb.SmbFile;
 
 public class SmbMessageRequester extends AbstractMessageRequester
 {
-    protected final SmbConnector connector;
+    protected final SmbConnector smbConnector;
 
     public SmbMessageRequester(InboundEndpoint endpoint)
     {
         super(endpoint);
-        this.connector = (SmbConnector)endpoint.getConnector();
+        this.smbConnector = (SmbConnector)endpoint.getConnector();
     }
 
     /**
@@ -45,67 +45,58 @@ public class SmbMessageRequester extends AbstractMessageRequester
     @Override
     protected MuleMessage doRequest(long timeout) throws Exception
     {
-        try
+        FilenameFilter filenameFilter = null;
+        if (endpoint.getFilter() instanceof FilenameFilter)
         {
-            FilenameFilter filenameFilter = null;
-            if (endpoint.getFilter() instanceof FilenameFilter)
-            {
-                filenameFilter = (FilenameFilter)endpoint.getFilter();
-            }
+            filenameFilter = (FilenameFilter)endpoint.getFilter();
+        }
 
-            EndpointURI uri = endpoint.getEndpointURI();
-            String smbPath = null;
-            if (SmbConnector.checkNullOrBlank(uri.getUser())
-                || SmbConnector.checkNullOrBlank(uri.getPassword()))
-            {
-                logger.warn("No user or password supplied. Attempting to connect with just smb://<host>/<path>");
-                logger.info("smb://" + uri.getHost() + uri.getPath());
-                smbPath = "smb://" + uri.getHost() + uri.getPath();
-            }
-            else
-            {
-                logger.info("smb://" + uri.getUser() + ":" + uri.getPassword() + "@" + uri.getHost()
-                            + uri.getPath());
-                smbPath = "smb://" + uri.getUser() + ":" + uri.getPassword() + "@" + uri.getHost()
-                          + uri.getPath();
-            }
+        EndpointURI uri = endpoint.getEndpointURI();
+        String smbPath = null;
+        if (SmbConnector.checkNullOrBlank(uri.getUser()) || SmbConnector.checkNullOrBlank(uri.getPassword()))
+        {
+            logger.warn("No user or password supplied. Attempting to connect with just smb://<host>/<path>");
+            logger.info("smb://" + uri.getHost() + uri.getPath());
+            smbPath = "smb://" + uri.getHost() + uri.getPath();
+        }
+        else
+        {
+            logger.info("smb://" + uri.getUser() + ":" + uri.getPassword() + "@" + uri.getHost()
+                        + uri.getPath());
+            smbPath = "smb://" + uri.getUser() + ":" + uri.getPassword() + "@" + uri.getHost()
+                      + uri.getPath();
+        }
 
-            SmbFile[] files = new SmbFile(smbPath).listFiles();
+        SmbFile[] files = new SmbFile(smbPath).listFiles();
+        if (files == null || files.length == 0)
+        {
+            return null;
+        }
 
-            if (files == null || files.length == 0)
+        List<SmbFile> fileList = new ArrayList<SmbFile>();
+        SmbFile file = null;
+        for (int i = 0; i < files.length; i++)
+        {
+            file = files[i];
+            if (file.isFile())
             {
-                return null;
-            }
-
-            List fileList = new ArrayList();
-
-            SmbFile file = null;
-            for (int i = 0; i < files.length; i++)
-            {
-                file = files[i];
-                if (file.isFile())
+                if (filenameFilter == null || filenameFilter.accept(null, file.getName()))
                 {
-                    if (filenameFilter == null || filenameFilter.accept(null, file.getName()))
+                    if (smbConnector.validateFile(file))
                     {
-                        if (connector.validateFile(file))
-                        {
-                            fileList.add(file);
-                            // only read the first one
-                            break;
-                        }
+                        fileList.add(file);
+                        // only read the first one
+                        break;
                     }
                 }
             }
-            if (fileList.size() == 0)
-            {
-                return null;
-            }
-
-            return createMuleMessage(file);
         }
-        finally
+        if (fileList.size() == 0)
         {
-            logger.debug("leaving doRequest()");
+            return null;
         }
+
+        // TODO why not use the fileList above?
+        return createMuleMessage(file);
     }
 }

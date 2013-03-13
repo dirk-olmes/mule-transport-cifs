@@ -31,11 +31,7 @@ import jcifs.smb.SmbFileInputStream;
  */
 public class NewSmbMessageReceiver extends AbstractPollingMessageReceiver
 {
-    /*
-     * For general guidelines on writing transports see
-     * http://mule.mulesource.org/display/MULE/Writing+Transports
-     */
-    protected final SmbConnector connector;
+    protected final SmbConnector smbConnector;
     protected final FilenameFilter filenameFilter;
     protected final String smbPath;
     protected final Set<String> scheduledFiles = Collections.synchronizedSet(new HashSet<String>());
@@ -49,7 +45,7 @@ public class NewSmbMessageReceiver extends AbstractPollingMessageReceiver
 
         // this.setFrequency(frequency);
 
-        this.connector = (SmbConnector)connector;
+        this.smbConnector = (SmbConnector)connector;
 
         if (endpoint.getFilter() instanceof FilenameFilter)
         {
