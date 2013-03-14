@@ -10,12 +10,18 @@
         http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/3.3/mule-test.xsd
         http://www.mulesoft.org/schema/mule/smb http://www.mulesoft.org/schema/mule/smb/3.3/mule-smb.xsd">
 
-    <smb:connector name="smbConnector" fileAge="5000"/>
+    <smb:connector name="smbConnector" fileAge="3000"/>
 
-    <flow name="fileAgeFlow">
+    <flow name="fileAgeFlow" initialState="stopped">
         <!-- the smb. properties must be set as system properties -->
         <smb:inbound-endpoint host="${smb.host}" path="/mule-share/"
             user="${smb.user}" password="${smb.password}"/>
+        <test:component/>
+    </flow>
+
+    <flow name="fileAgeOnEndpointFlow" initialState="stopped">
+        <smb:inbound-endpoint host="${smb.host}" path="/mule-share/"
+            user="${smb.user}" password="${smb.password}" fileAge="5000"/>
         <test:component/>
     </flow>
 </mule>

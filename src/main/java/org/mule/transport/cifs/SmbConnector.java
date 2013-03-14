@@ -35,10 +35,9 @@ public class SmbConnector extends AbstractConnector
 {
     /* This constant defines the main transport protocol identifier */
     public static final String SMB = "smb";
-    // only
+
     public static final long DEFAULT_POLLING_FREQUENCY = 1000;
-    public static final String PROPERTY_OUTPUT_PATTERN = "outputPattern"; // outbound
-    // only
+    public static final String PROPERTY_OUTPUT_PATTERN = "outputPattern"; // outbound only
     public static final String PROPERTY_FILENAME = "filename";
     private long pollingFrequency;
     private String outputPattern;
@@ -46,14 +45,11 @@ public class SmbConnector extends AbstractConnector
     private FilenameParser filenameParser;
 
     public static final String PROPERTY_FILE_AGE = "fileAge"; // inbound only
-    public static final String PROPERTY_MOVE_TO_PATTERN = "moveToPattern"; // inbound
-    // only
-    public static final String PROPERTY_MOVE_TO_DIRECTORY = "moveToDirectory"; // inbound
-    // only
+    public static final String PROPERTY_MOVE_TO_PATTERN = "moveToPattern"; // inbound only
+    public static final String PROPERTY_MOVE_TO_DIRECTORY = "moveToDirectory"; // inbound only
 
     private String moveToPattern = "";
     private String moveToDirectory = "";
-    private boolean checkFileAge = false;
     private long fileAge = 0;
 
     public SmbConnector(MuleContext context)
@@ -63,16 +59,6 @@ public class SmbConnector extends AbstractConnector
         filenameParser = new ExpressionFilenameParser();
         filenameParser.setMuleContext(context);
     }
-
-    /*
-     * For general guidelines on writing transports see
-     * http://mule.mulesource.org/display/MULE/Writing+Transports
-     */
-
-    /*
-     * IMPLEMENTATION NOTE: All configuaration for the transport should be set on the
-     * Connector object, this is the object that gets configured in MuleXml
-     */
 
     @Override
     public void doInitialise() throws InitialisationException
@@ -225,12 +211,9 @@ public class SmbConnector extends AbstractConnector
         return serviceDescriptor.createMessageReceiver(this, flowConstruct, endpoint, additionalArguments);
     }
 
-    /**
-     * Override this method to do extra checking on the file.
-     */
-    protected boolean validateFile(SmbFile file)
+    protected boolean checkFileAge(SmbFile file, long minimumAge)
     {
-        if (checkFileAge)
+        if (minimumAge > 0)
         {
             long lastMod = file.getLastModified();
             long now = System.currentTimeMillis();
@@ -327,29 +310,13 @@ public class SmbConnector extends AbstractConnector
         this.moveToPattern = moveToPattern;
     }
 
-    /**
-     * Getter for property 'fileAge'.
-     *
-     * @return Returns the fileAge.
-     */
     public long getFileAge()
     {
         return fileAge;
     }
 
-    public boolean getCheckFileAge()
-    {
-        return checkFileAge;
-    }
-
-    /**
-     * Setter for property 'fileAge'.
-     *
-     * @param fileAge The fileAge in milliseconds to set.
-     */
     public void setFileAge(long fileAge)
     {
         this.fileAge = fileAge;
-        this.checkFileAge = true;
     }
 }

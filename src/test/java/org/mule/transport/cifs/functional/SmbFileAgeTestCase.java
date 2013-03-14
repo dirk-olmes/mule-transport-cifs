@@ -10,10 +10,12 @@
 
 package org.mule.transport.cifs.functional;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.mule.api.MuleEventContext;
+import org.mule.construct.AbstractFlowConstruct;
 import org.mule.tck.functional.EventCallback;
 import org.mule.tck.functional.FunctionalTestComponent;
 import org.mule.transport.cifs.util.SmbUtil;
@@ -31,7 +33,8 @@ public class SmbFileAgeTestCase extends AbstractSmbTestCase
 {
     private static Log log = LogFactory.getLog(SmbFileAgeTestCase.class);
 
-    private static final long CONFIGURED_FILE_AGE = 5000;
+    private static final long FILE_AGE_ON_CONNECTOR = 3000;
+    private static final long FILE_AGE_ON_ENDPOINT = 5000;
     private static final String FILENAME = "aging-file.txt";
 
     private Latch eventLatch = new Latch();
@@ -51,32 +54,72 @@ public class SmbFileAgeTestCase extends AbstractSmbTestCase
     }
 
     @Test
-    public void fileAgeShouldBeRespected() throws Exception
+    public void fileAgeOnConnectorShouldBeRespected() throws Exception
     {
-        Callback callback = new Callback(eventLatch);
+        startFlow("fileAgeFlow");
 
-        FunctionalTestComponent ftc = (FunctionalTestComponent) getComponent("fileAgeFlow");
-        ftc.setEventCallback(callback);
+        Callback callback = installCallback("fileAgeFlow");
 
-        forkWriterThread();
+        forkWriterThread(FILE_AGE_ON_CONNECTOR);
         long start = System.currentTimeMillis();
 
         assertTrue("file did not arrive in time", eventLatch.await(30, TimeUnit.SECONDS));
         assertNull(exceptionInWriterThread);
 
         long diff = callback.eventReceivedTime - start;
-        assertTrue(diff >= CONFIGURED_FILE_AGE);
+        assertTrue(diff >= FILE_AGE_ON_CONNECTOR);
     }
 
-    private void forkWriterThread()
+
+    @Test
+    public void fileAgeOnEndpointShouldBeRespected() throws Exception
     {
-        Thread writerThread = new Thread(new SmbWriter(), "smbWriter");
+        startFlow("fileAgeOnEndpointFlow");
+
+        Callback callback = installCallback("fileAgeOnEndpointFlow");
+
+        forkWriterThread(FILE_AGE_ON_ENDPOINT);
+        long start = System.currentTimeMillis();
+
+        assertTrue("file did not arrive in time", eventLatch.await(30, TimeUnit.SECONDS));
+        assertNull(exceptionInWriterThread);
+
+        long diff = callback.eventReceivedTime - start;
+        assertTrue(diff >= FILE_AGE_ON_ENDPOINT);
+    }
+
+    private void startFlow(String flowName) throws Exception
+    {
+        AbstractFlowConstruct flow = (AbstractFlowConstruct) getFlowConstruct(flowName);
+        assertNotNull(flow);
+
+        flow.start();
+    }
+
+    private Callback installCallback(String flowName) throws Exception
+    {
+        Callback callback = new Callback(eventLatch);
+        FunctionalTestComponent ftc = (FunctionalTestComponent) getComponent(flowName);
+        ftc.setEventCallback(callback);
+        return callback;
+    }
+
+    private void forkWriterThread(long fileAge)
+    {
+        Thread writerThread = new Thread(new SmbWriter(fileAge), "smbWriter");
         writerThread.start();
     }
 
     private class SmbWriter implements Runnable
     {
         private static final long SLEEP_TIME = 1000;
+        private final long fileAge;
+
+        public SmbWriter(long fileAge)
+        {
+            super();
+            this.fileAge = fileAge;
+        }
 
         public void run()
         {
@@ -84,10 +127,10 @@ public class SmbFileAgeTestCase extends AbstractSmbTestCase
             try
             {
                 out = new SmbUtil().openStream(FILENAME);
-                long chunkCount = CONFIGURED_FILE_AGE / SLEEP_TIME;
+                long chunkCount = fileAge / SLEEP_TIME;
                 for (int i = 0; i < chunkCount; i++)
                 {
-                    Thread.sleep(1000);
+                    Thread.sleep(SLEEP_TIME);
                     out.write(TEST_MESSAGE.getBytes("UTF-8"));
                     log.debug("wrote message chunk");
                 }

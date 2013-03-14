@@ -82,7 +82,8 @@ public class SmbMessageRequester extends AbstractMessageRequester
             {
                 if (filenameFilter == null || filenameFilter.accept(null, file.getName()))
                 {
-                    if (smbConnector.validateFile(file))
+                    long fileAge = smbConnector.getFileAge();
+                    if (smbConnector.checkFileAge(file, fileAge))
                     {
                         fileList.add(file);
                         // only read the first one

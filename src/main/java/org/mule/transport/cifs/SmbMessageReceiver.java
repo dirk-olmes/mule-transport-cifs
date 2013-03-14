@@ -109,33 +109,31 @@ public class SmbMessageReceiver extends AbstractPollingMessageReceiver
     protected SmbFile[] listFiles() throws Exception
     {
         SmbFile[] files = new SmbFile(smbPath).listFiles();
-
         if (files == null || files.length == 0)
         {
             return files;
         }
 
-        List<SmbFile> v = new ArrayList<SmbFile>();
-
+        List<SmbFile> filesToProcess = new ArrayList<SmbFile>();
         for (SmbFile file : files)
         {
             if (file.isFile())
             {
                 if (filenameFilter == null || filenameFilter.accept(null, file.getName()))
                 {
-                    v.add(file);
+                    filesToProcess.add(file);
                 }
             }
         }
 
-        return v.toArray(new SmbFile[v.size()]);
+        return filesToProcess.toArray(new SmbFile[filesToProcess.size()]);
     }
 
     protected void processFile(SmbFile file) throws Exception
     {
         try
         {
-            if (!smbConnector.validateFile(file))
+            if (!smbConnector.checkFileAge(file, fileAge))
             {
                 return;
             }
