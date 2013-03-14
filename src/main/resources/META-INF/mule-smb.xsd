@@ -48,13 +48,6 @@
                         </xsd:annotation>
                     </xsd:element>
                 </xsd:sequence>
-                <xsd:attribute name="fileAge" type="mule:substitutableLong">
-                    <xsd:annotation>
-                        <xsd:documentation>
-                            Miniumum age (ms) for a file to be processed.
-                        </xsd:documentation>
-                    </xsd:annotation>
-                </xsd:attribute>
                 <xsd:attribute name="moveToPattern" type="xsd:string">
                     <xsd:annotation>
                         <xsd:documentation>
@@ -114,6 +107,13 @@
             <xsd:annotation>
                 <xsd:documentation>
                     How frequently in milliseconds to check the read directory. Note that the read directory is specified by the endpoint of the listening component.
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="fileAge" type="mule:substitutableLong">
+            <xsd:annotation>
+                <xsd:documentation>
+                    Miniumum age (ms) for a file to be processed.
                 </xsd:documentation>
             </xsd:annotation>
         </xsd:attribute>

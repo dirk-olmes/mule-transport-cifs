@@ -10,14 +10,16 @@
 
 package org.mule.transport.cifs;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import org.mule.api.endpoint.EndpointBuilder;
+import org.mule.api.endpoint.ImmutableEndpoint;
 import org.mule.tck.junit4.FunctionalTestCase;
 import org.mule.transport.file.ExpressionFilenameParser;
 
 import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 public class SmbNamespaceHandlerTestCase extends FunctionalTestCase
 {
@@ -34,12 +36,28 @@ public class SmbNamespaceHandlerTestCase extends FunctionalTestCase
     }
 
     @Test
-    public void testSmbConfig() throws Exception
+    public void smbConnectorAttributes() throws Exception
     {
         SmbConnector connector = (SmbConnector) muleContext.getRegistry().lookupConnector("smbConnector");
         assertNotNull(connector);
+
         assertEquals(42, connector.getFileAge());
+
         assertTrue(connector.getFilenameParser() instanceof ExpressionFilenameParser);
         assertEquals("#[function:uuid]", connector.getMoveToPattern());
+    }
+
+    @Test
+    public void fileAgeFromEndpointShouldOverrideConnectorConfiguration() throws Exception
+    {
+        ImmutableEndpoint endpoint = lookupEndpoint("epWithFileAge");
+        assertEquals("smb://localhost/foo", endpoint.getAddress());
+        assertEquals("99", endpoint.getProperty("fileAge"));
+    }
+
+    private ImmutableEndpoint lookupEndpoint(String endpointName) throws Exception
+    {
+        EndpointBuilder builder = muleContext.getRegistry().lookupEndpointBuilder(endpointName);
+        return builder.buildInboundEndpoint();
     }
 }

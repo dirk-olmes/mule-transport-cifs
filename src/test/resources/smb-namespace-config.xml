@@ -10,6 +10,8 @@
 
     <smb:connector name="smbConnector" fileAge="42" moveToPattern="#[function:uuid]"/>
 
+    <smb:endpoint name="epWithFileAge" host="localhost" path="/foo" fileAge="99"/>
+
 <!--     <smb:endpoint name="smbOutboundEndpoint" path="C$/TEMP" -->
 <!--         user="masonshoe;ajr" password="********" host="adamriley"/> -->
 
@@ -18,45 +20,4 @@
         user="masonshoe;ajr" password="07Admar1177" host="adamriley">
     </smb:endpoint>
     -->
-
-<!--     <model name="smbConnectorTestModel"> -->
-
-<!--         <service name="smbConnectorTestService"> -->
-<!--             <inbound> -->
-                <!--
-                <smb:inbound-endpoint address="smb://masonshoe;ajr:07Admar1177@adamriley/C$/TEMP/smbIn.txt" />
-                -->
-
-<!--                 <smb:inbound-endpoint pollingFrequency="5000" -->
-<!--                     path="C$/TEMP/" user="masonshoe;ajr" password="********" host="adamriley" -->
-<!--                     synchronous="true" responseTimeout="10000"> -->
-<!--                     <file:filename-wildcard-filter pattern="test*"/> -->
-<!--                 </smb:inbound-endpoint> -->
-
-<!--                 <vm:inbound-endpoint path="testLauncher" -->
-<!--                     synchronous="true" responseTimeout="10000"> -->
-<!--                 </vm:inbound-endpoint> -->
-
-<!--             </inbound> -->
-<!--             <outbound> -->
-<!--                 <pass-through-router> -->
-<!--                     <vm:outbound-endpoint path="smbConnectorTestSmbServicePath" /> -->
-<!--                 </pass-through-router> -->
-<!--             </outbound> -->
-<!--         </service> -->
-
-<!--         <service name="smbConnectorTestSmbService"> -->
-<!--             <inbound> -->
-<!--                 <vm:inbound-endpoint path="smbConnectorTestSmbServicePath" /> -->
-<!--             </inbound> -->
-<!--             <outbound> -->
-<!--                 <pass-through-router> -->
-<!--                     <smb:outbound-endpoint ref="smbOutboundEndpoint" -->
-<!--                         outputPattern="C$/TEMP/smbTest-${DATE:yyyyMMddHHmmss}.txt"> -->
-<!--                     </smb:outbound-endpoint> -->
-<!--                 </pass-through-router> -->
-<!--             </outbound> -->
-<!--         </service> -->
-
-<!--     </model> -->
 </mule>
