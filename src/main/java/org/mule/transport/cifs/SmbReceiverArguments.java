@@ -118,7 +118,7 @@ public class SmbReceiverArguments
             }
         }
 
-        logger.debug("set fileAge to: " + fileAge + "milliseconds");
+        logger.debug("set fileAge to: " + fileAge + " milliseconds");
         arguments.add(Long.valueOf(fileAge));
     }
 }
