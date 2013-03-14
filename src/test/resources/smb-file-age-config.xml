@@ -14,7 +14,8 @@
 
     <flow name="fileAgeFlow">
         <!-- the smb. properties must be set as system properties -->
-        <smb:inbound-endpoint address="smb://${smb.user}:${smb.password}@${smb.host}/mule-share/"/>
+        <smb:inbound-endpoint host="${smb.host}" path="/mule-share/"
+            user="${smb.user}" password="${smb.password}"/>
         <test:component/>
     </flow>
 </mule>

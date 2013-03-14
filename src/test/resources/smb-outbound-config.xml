@@ -16,6 +16,7 @@
         <vm:inbound-endpoint path="data"/>
 
         <!-- the smb. properties must be set as system properties -->
-        <smb:outbound-endpoint address="smb://${smb.user}:${smb.password}@${smb.host}/mule-share/"/>
+        <smb:outbound-endpoint host="${smb.host}" path="/mule-share/"
+            user="${smb.user}" password="${smb.password}"/>
     </flow>
 </mule>
