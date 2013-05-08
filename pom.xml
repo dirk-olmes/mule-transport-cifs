@@ -6,7 +6,7 @@
     <packaging>jar</packaging>
     <version>3.3.0-SNAPSHOT</version>
     <name>Mule CIFS transport</name>
-    <url>http://www.mulesoft.org/cifssmb-transport</url>
+    <url>http://www.mulesoft.org/extensions/cifs-transport</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
