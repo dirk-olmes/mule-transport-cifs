@@ -4,7 +4,7 @@
     <groupId>org.mule.transports</groupId>
     <artifactId>mule-transport-cifs</artifactId>
     <packaging>jar</packaging>
-    <version>3.3.0</version>
+    <version>3.3.1-SNAPSHOT</version>
     <name>Mule CIFS transport</name>
     <url>http://www.mulesoft.org/extensions/cifs-transport</url>
 
