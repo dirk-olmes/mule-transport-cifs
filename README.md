@@ -31,7 +31,7 @@ Alternatively, you can bundle the two jar files along with your application.
 The cifs transport is very similar to the [File transport](http://www.mulesoft.org/documentation/display/MULE3USER/File+Transport+Reference). It can be used to retrieve files from an SMB share:
 
     <flow name="smb2file">
-        <smb:inbound-endpoint address="smb://user:password@host/path/"/>
+        <smb:inbound-endpoint host="the-host" user="username" password="secret" path="/path"/>
         <file:outbound-endpoint path="/data"/>
     </flow>
 
@@ -39,5 +39,5 @@ or to store files on an SMB share:
 
     <flow name="file2smb">
         <file:inbound-endpoint path="/data"/>
-        <smb:outbound-endpoint address="smb://user:password@host/path/"/>
+        <smb:outbound-endpoint host="the-host" user="username" password="secret" path="/path"/>
     </flow>
