@@ -61,10 +61,8 @@ public class SmbMessageRequester extends AbstractMessageRequester
         }
         else
         {
-            logger.info("smb://" + uri.getUser() + ":" + uri.getPassword() + "@" + uri.getHost()
-                        + uri.getPath());
-            smbPath = "smb://" + uri.getUser() + ":" + uri.getPassword() + "@" + uri.getHost()
-                      + uri.getPath();
+            logger.info("smb://" + uri.getUser() + ":<password hidden>@" + uri.getHost() + uri.getPath());
+            smbPath = "smb://" + uri.getUser() + ":" + uri.getPassword() + "@" + uri.getHost() + uri.getPath();
         }
 
         SmbFile[] files = new SmbFile(smbPath).listFiles();

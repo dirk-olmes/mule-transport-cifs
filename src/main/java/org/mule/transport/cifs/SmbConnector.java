@@ -149,10 +149,10 @@ public class SmbConnector extends AbstractConnector
             }
             else
             {
-                logger.info("smb://" + uri.getUser() + ":" + uri.getPassword() + "@" + uri.getHost()
-                            + uri.getPath() + filename);
-                smbFile = new SmbFile("smb://" + uri.getUser() + ":" + uri.getPassword() + "@"
-                                      + uri.getHost() + uri.getPath() + filename);
+                logger.info("smb://" + uri.getUser() + ":<password hidden>@" + uri.getHost() + uri.getPath() + filename);
+                
+                String url = "smb://" + uri.getUser() + ":" + uri.getPassword() + "@" + uri.getHost() + uri.getPath() + filename;
+                smbFile = new SmbFile(url);
             }
 
             if (!smbFile.exists())

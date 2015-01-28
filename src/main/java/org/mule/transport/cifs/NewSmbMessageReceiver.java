@@ -69,7 +69,6 @@ public class NewSmbMessageReceiver extends AbstractPollingMessageReceiver
             smbPath = "smb://" + uri.getUser() + ":" + uri.getPassword() + "@" + uri.getHost()
                       + uri.getPath();
         }
-        logger.warn(smbPath);
     }
 
     @Override

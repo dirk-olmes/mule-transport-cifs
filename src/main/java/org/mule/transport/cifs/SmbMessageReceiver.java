@@ -77,8 +77,7 @@ public class SmbMessageReceiver extends AbstractPollingMessageReceiver
         }
         else
         {
-            smbPath = "smb://" + uri.getUser() + ":" + uri.getPassword() + "@" + uri.getHost()
-                      + uri.getPath();
+            smbPath = "smb://" + uri.getUser() + ":" + uri.getPassword() + "@" + uri.getHost() + uri.getPath();
         }
     }
 
@@ -165,15 +164,14 @@ public class SmbMessageReceiver extends AbstractPollingMessageReceiver
             SmbFile dest;
             EndpointURI uri = endpoint.getEndpointURI();
 
-            if (SmbConnector.checkNullOrBlank(uri.getUser())
-                || SmbConnector.checkNullOrBlank(uri.getPassword()))
+            if (SmbConnector.checkNullOrBlank(uri.getUser()) || SmbConnector.checkNullOrBlank(uri.getPassword()))
             {
                 dest = new SmbFile("smb://" + uri.getHost() + moveToDir + destinationFileName);
             }
             else
             {
-                dest = new SmbFile("smb://" + uri.getUser() + ":" + uri.getPassword() + "@" + uri.getHost()
-                                   + moveToDir + destinationFileName);
+            	String url = "smb://" + uri.getUser() + ":" + uri.getPassword() + "@" + uri.getHost() + moveToDir + destinationFileName;
+                dest = new SmbFile(url);
             }
 
             logger.debug("dest: " + dest);
