@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:spring="http://www.springframework.org/schema/beans"
+      xmlns:smb="http://www.mulesoft.org/schema/mule/smb"
+      xmlns:vm="http://www.mulesoft.org/schema/mule/vm"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/3.3/mule.xsd
+        http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/3.3/mule-vm.xsd
+        http://www.mulesoft.org/schema/mule/smb http://www.mulesoft.org/schema/mule/smb/3.3/mule-smb.xsd">
+
+    <smb:connector name="smbConnector" outputPattern="out.txt"/>
+
+    <flow name="vm2smb">
+        <vm:inbound-endpoint path="data"/>
+
+        <!-- the smb. properties must be set as system properties -->
+        <smb:outbound-endpoint host="${smb.host}" path="/mule-share/nonexistent-path/"
+            user="${smb.user}" password="${smb.password}" createIntermediateDirectories="true"/>
+    </flow>
+</mule>

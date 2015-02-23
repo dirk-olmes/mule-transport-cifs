@@ -123,9 +123,16 @@
         <xsd:attribute name="outputPattern" type="xsd:string">
             <xsd:annotation>
                 <xsd:documentation>
-                    The pattern to use when writing a file to disk. This can use the patterns supported by the filename-parser configured for this connector
+                    The pattern to use when writing a file to disk. This can use the patterns supported by the filename-parser configured for this connector.
                 </xsd:documentation>
             </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="createIntermediateDirectories" type="mule:substitutableBoolean">
+        	<xsd:annotation>
+        		<xsd:documentation>
+        			If set to true, missing directories on the target path are created on the fly.
+        		</xsd:documentation>
+        	</xsd:annotation>
         </xsd:attribute>
     </xsd:attributeGroup>
 

@@ -27,8 +27,10 @@ import org.mule.transport.file.ExpressionFilenameParser;
 import org.mule.transport.file.FilenameParser;
 
 import java.io.OutputStream;
+import java.net.MalformedURLException;
 import java.util.Map;
 
+import jcifs.smb.SmbException;
 import jcifs.smb.SmbFile;
 
 public class SmbConnector extends AbstractConnector
@@ -37,16 +39,18 @@ public class SmbConnector extends AbstractConnector
     public static final String SMB = "smb";
 
     public static final long DEFAULT_POLLING_FREQUENCY = 1000;
-    public static final String PROPERTY_OUTPUT_PATTERN = "outputPattern"; // outbound only
+    
+    public static final String PROPERTY_CREATE_INTERMEDIATE_DIRECTORIES = "createIntermediateDirectories"; // outbound only
+    public static final String PROPERTY_FILE_AGE = "fileAge"; // inbound only
     public static final String PROPERTY_FILENAME = "filename";
+    public static final String PROPERTY_MOVE_TO_PATTERN = "moveToPattern"; // inbound only
+    public static final String PROPERTY_MOVE_TO_DIRECTORY = "moveToDirectory"; // inbound only
+    public static final String PROPERTY_OUTPUT_PATTERN = "outputPattern"; // outbound only
+    
     private long pollingFrequency;
     private String outputPattern;
 
     private FilenameParser filenameParser;
-
-    public static final String PROPERTY_FILE_AGE = "fileAge"; // inbound only
-    public static final String PROPERTY_MOVE_TO_PATTERN = "moveToPattern"; // inbound only
-    public static final String PROPERTY_MOVE_TO_DIRECTORY = "moveToDirectory"; // inbound only
 
     private String moveToPattern = "";
     private String moveToDirectory = "";
@@ -151,8 +155,11 @@ public class SmbConnector extends AbstractConnector
             {
                 logger.info("smb://" + uri.getUser() + ":<password hidden>@" + uri.getHost() + uri.getPath() + filename);
                 
-                String url = "smb://" + uri.getUser() + ":" + uri.getPassword() + "@" + uri.getHost() + uri.getPath() + filename;
-                smbFile = new SmbFile(url);
+                String directoryUrl = "smb://" + uri.getUser() + ":" + uri.getPassword() + "@" + uri.getHost() + uri.getPath();
+                createDirectory(directoryUrl, endpoint);
+                
+                String fileUrl = directoryUrl + filename;
+                smbFile = new SmbFile(fileUrl);
             }
 
             if (!smbFile.exists())
@@ -169,7 +176,7 @@ public class SmbConnector extends AbstractConnector
 
         return stream;
     }
-
+    
     private String getFilename(OutboundEndpoint endpoint, MuleEvent event) throws MuleException
     {
         String filename = new FilenameBuilder(this, endpoint).getFilename(event);
@@ -181,8 +188,32 @@ public class SmbConnector extends AbstractConnector
 
         return filename;
     }
+    
+    private void createDirectory(String directoryUrl, OutboundEndpoint endpoint) throws MalformedURLException, SmbException
+    {
+    	SmbFile directory = new SmbFile(directoryUrl);
+    	if (directory.exists() == false)
+    	{
+    		if (shouldCreateDirectory(endpoint))
+    		{
+    			logger.info("creating directory " + directory.getPath());
+    			directory.mkdirs();
+    		}
+    		else
+    		{
+    			throw new IllegalStateException("directory " + directory.getPath() + " does not exist and " 
+    				+ PROPERTY_CREATE_INTERMEDIATE_DIRECTORIES + " is not configured or false on the endpoint");
+    		}
+    	}
+    }
 
-    public void setOutputPattern(String outputPattern)
+    private boolean shouldCreateDirectory(OutboundEndpoint endpoint)
+    {
+		String value = (String)endpoint.getProperty(PROPERTY_CREATE_INTERMEDIATE_DIRECTORIES);
+		return Boolean.parseBoolean(value);
+	}
+
+	public void setOutputPattern(String outputPattern)
     {
         this.outputPattern = outputPattern;
     }
