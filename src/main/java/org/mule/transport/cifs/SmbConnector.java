@@ -250,9 +250,13 @@ public class SmbConnector extends AbstractConnector
             long now = System.currentTimeMillis();
             long currentAge = now - lastMod;
 
-            logger.debug("fileAge = " + currentAge + ", expected = " + fileAge + ", now = " + now
-                         + ", lastMod = " + lastMod);
-            if (currentAge < fileAge)
+            if (logger.isDebugEnabled())
+            {
+            	logger.debug("fileAge = " + currentAge + ", expected = " + minimumAge + ", now = " + now
+        			+ ", lastMod = " + lastMod);
+            }
+            
+            if (currentAge < minimumAge)
             {
                 if (logger.isInfoEnabled())
                 {
